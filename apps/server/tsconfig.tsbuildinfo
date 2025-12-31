@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/controllers/healthcontrollers.ts","./src/controllers/productcontrollers.ts","./src/middleware/errormiddleware.ts","./src/routers/index.ts","./src/routers/productrouter.ts","./src/utils/asynchandler.ts","./src/utils/envchecker.ts","./src/utils/errorclasses.ts"],"version":"5.9.2"}

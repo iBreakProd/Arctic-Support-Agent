@@ -28,18 +28,17 @@ export const messagesTable = pgTable("messages", {
 export const productsTable = pgTable("products", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().notNull(),
-  rating: numeric().notNull(),
-  reviews: text().array().notNull(),
+  description: text().notNull(),
+  price: numeric().notNull(),
+  imageUrl: text().notNull(),
   seller: text().notNull(),
   sellerEmail: text().notNull(),
   sellerRating: numeric().notNull(),
   sellerReviews: text().array().notNull(),
-  description: text().notNull(),
   category: text().notNull(),
   subCategory: text().notNull(),
-  tags: text().array().notNull(),
-  price: numeric().notNull(),
-  imageUrl: text().notNull(),
+  rating: numeric().notNull(),
+  reviews: text().array().notNull(),
   createdAt: timestamp().defaultNow(),
 });
 

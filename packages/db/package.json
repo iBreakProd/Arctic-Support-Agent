@@ -3,6 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./schema": {
+      "import": "./src/db/schema.ts",
+      "require": "./dist/db/schema.js",
+      "types": "./dist/db/schema.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc -b",
     "db:generate": "npx drizzle-kit generate",
