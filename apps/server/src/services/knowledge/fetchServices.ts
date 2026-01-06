@@ -1,3 +1,11 @@
+import { readFileSync } from "fs";
+import { join } from "path";
+
+export const fetchBotDocumentation = async () => {
+  const path = join(process.cwd(), "src", "knowledge", "aiBotKnowledge.md");
+  return readFileSync(path, "utf-8");
+};
+
 export const fetchAppPurpose = async () => {
   return `
 App Purpose — Arctic AI Support Showcase

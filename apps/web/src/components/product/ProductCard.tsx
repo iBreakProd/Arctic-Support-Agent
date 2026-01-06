@@ -38,7 +38,7 @@ export function ProductCard({
       )}
       <div
         className={cn(
-          "absolute inset-0 bg-gradient-to-b from-transparent to-black/80 z-10 transition-opacity",
+          "absolute inset-0 bg-linear-to-b from-transparent to-black/80 z-10 transition-opacity",
           featured ? "opacity-60 group-hover:opacity-40" : "opacity-60 group-hover:opacity-40"
         )}
       />

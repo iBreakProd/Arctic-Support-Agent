@@ -5,6 +5,20 @@ import { Request, Response } from "express";
 import { AppError } from "../utils/errorClasses";
 import { PgTransaction } from "drizzle-orm/pg-core";
 import { eq } from "drizzle-orm";
+import { getOrderByIdWithItems } from "../services/db/orderServices";
+
+export const getOrderById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  if (!id) throw new AppError("Order ID is required", 400);
+
+  const result = await getOrderByIdWithItems(id);
+  if (!result) throw new AppError("Order not found", 404);
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+};
 
 export const getAllOrders = async (_req: Request, res: Response) => {
   const orders = await db

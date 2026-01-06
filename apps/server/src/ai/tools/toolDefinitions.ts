@@ -5,19 +5,21 @@ export const tools: ChatCompletionTool[] = [
     type: "function",
     function: {
       name: "getOrderById",
-      description: "Get order by id",
+      description:
+        "Get order by id. Accepts full UUID or the short format users see: #ORD-22C56AE4, ORD-22C56AE4, or 22C56AE4 (last 8 chars of the order UUID).",
       parameters: {
         type: "object",
         properties: {
           orderId: {
             type: "string",
-            description: "The id of the order to get",
+            description:
+              "Order id: full UUID, or short format like 22C56AE4, ORD-22C56AE4, #ORD-22C56AE4",
           },
         },
         required: ["orderId"],
         additionalProperties: false,
         example: {
-          orderId: "123",
+          orderId: "22C56AE4",
         },
       },
     },
@@ -74,9 +76,74 @@ export const tools: ChatCompletionTool[] = [
   {
     type: "function",
     function: {
+      name: "getProductCatalog",
+      description:
+        "Get available product categories, subcategories, and price range. Call this BEFORE searchProducts when making personalized recommendations—it tells you the exact values to use (e.g. category: Titanium, Ceramic; subCategory: 750ml, 1000ml).",
+      parameters: {
+        type: "object",
+        properties: {},
+        required: [],
+        additionalProperties: false,
+        example: {},
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "searchProducts",
+      description:
+        "Search/filter products by criteria. Use category and subCategory values from getProductCatalog (e.g. Titanium, Copper, Ceramic; 750ml, 1000ml). Do NOT use generic terms like 'bottles'—use actual category names. Call getProductCatalog first if unsure.",
+      parameters: {
+        type: "object",
+        properties: {
+          category: {
+            type: "string",
+            description: "Product category filter (partial match)",
+          },
+          subCategory: {
+            type: "string",
+            description: "Sub-category filter e.g. capacity or variant (partial match)",
+          },
+          maxPrice: {
+            type: "number",
+            description: "Maximum price in dollars",
+          },
+          minPrice: {
+            type: "number",
+            description: "Minimum price in dollars",
+          },
+          limit: {
+            type: "number",
+            description: "Max results to return (default 10, max 50)",
+          },
+        },
+        required: [],
+        additionalProperties: false,
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "getAppPurpose",
       description:
         "Get information about the app's purpose. Use when the user asks: What is this app? What does Arctic do? What is the AI's purpose? What does this application do? Why was this built?",
+      parameters: {
+        type: "object",
+        properties: {},
+        required: [],
+        additionalProperties: false,
+        example: {},
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "getBotDocumentation",
+      description:
+        "Get documentation on how the AI bot works—architecture, tool-running loop, tools, embeddings, API, rate limits. Use when the user asks: How does this bot work? How are you built? What tools do you have? How does the AI work? Architecture? API? Documentation?",
       parameters: {
         type: "object",
         properties: {},

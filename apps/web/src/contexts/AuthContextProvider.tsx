@@ -50,14 +50,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const restoreSession = useCallback(async () => {
     setIsLoading(true);
-    const stored = getStoredUser();
-    if (!stored) {
-      setIsLoading(false);
-      return;
-    }
     try {
-      await api.get("/users/profile");
-      setUserState(stored);
+      const res = await api.get<{ data: User }>("/auth/me");
+      if (res.data?.data) {
+        setUserState(res.data.data);
+        setStoredUser(res.data.data);
+      } else {
+        setUserState(null);
+        setStoredUser(null);
+      }
     } catch {
       setUserState(null);
       setStoredUser(null);

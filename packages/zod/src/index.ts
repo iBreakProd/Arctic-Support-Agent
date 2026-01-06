@@ -50,8 +50,17 @@ export const messageSchema = z.object({
   conversationId: z.string().optional().nullable(),
 });
 
+const embeddingSchema = z.object({
+  type: z.enum(["product", "order"]),
+  id: z.string(),
+});
+
 export const aiResponseSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("answer"), response: z.string() }),
+  z.object({
+    type: z.literal("answer"),
+    response: z.string(),
+    embeddings: z.array(embeddingSchema).max(6).optional(),
+  }),
   z.object({
     type: z.literal("ambiguity"),
     response: z.string(),

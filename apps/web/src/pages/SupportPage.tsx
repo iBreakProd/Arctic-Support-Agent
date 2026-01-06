@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContextHook";
+import { useChatSession } from "@/contexts/ChatSessionHook";
 import { AppShell } from "@/components/layout/AppShell";
 import { ChatWindow } from "@/components/support/ChatWindow";
 import { ConversationList } from "@/components/support/ConversationList";
@@ -13,6 +14,7 @@ export function SupportPage() {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") ?? undefined;
   const { isAuthenticated } = useAuth();
+  const { loadConversation, clearSession } = useChatSession();
   const [view, setView] = useState<"list" | "chat">("list");
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
@@ -29,20 +31,35 @@ export function SupportPage() {
 
   const handleSelectConversation = (id: string | null) => {
     setSelectedConversationId(id);
+    if (id) {
+      loadConversation(id);
+    } else {
+      clearSession();
+    }
+    setView("chat");
+  };
+
+  const handleNewConversation = () => {
+    clearSession();
+    setSelectedConversationId(null);
     setView("chat");
   };
 
   if (!isAuthenticated) {
     return (
       <AppShell>
-        <main className="lg:pl-20 min-h-screen bg-grid-pattern p-4 md:p-12">
-          <div className="max-w-6xl mx-auto pt-24 lg:pt-12">
+        <main className="lg:pl-24 min-h-screen bg-grid-pattern p-4 md:p-8 lg:pr-8 relative">
+          <div className="fixed top-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
+          <div className="fixed bottom-20 left-40 w-64 h-64 bg-purple-500/5 rounded-full blur-[80px] pointer-events-none z-0" />
+          <div className="relative z-10 max-w-5xl mx-auto pt-24 lg:pt-12">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold font-display mb-2">Support</h1>
-              <p className="text-gray-400 mb-6">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter">
+                AI <br /> <span className="text-outline">SUPPORT</span>
+              </h1>
+              <p className="text-gray-400 mt-4 max-w-xl mb-6">
                 Chat with our AI about orders, products, or hydration.
               </p>
-              <div className="rounded-lg border border-white/10 bg-white/5 p-8 text-center">
+              <div className="rounded-lg border border-white/10 bg-white/5 p-8 text-center glass-panel">
                 <p className="text-gray-400 mb-4">
                   Log in to see your conversation history.
                 </p>
@@ -63,21 +80,46 @@ export function SupportPage() {
   if (view === "chat") {
     return (
       <AppShell>
-        <main className="lg:pl-20 min-h-screen bg-grid-pattern p-4 md:p-12">
-          <div className="max-w-6xl mx-auto pt-24 lg:pt-12">
+        <main className="lg:pl-24 min-h-screen bg-grid-pattern p-4 md:p-8 lg:pr-8 relative">
+          <div className="fixed top-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
+          <div className="fixed bottom-20 left-40 w-64 h-64 bg-purple-500/5 rounded-full blur-[80px] pointer-events-none z-0" />
+          <div className="relative z-10 max-w-5xl mx-auto pt-24 lg:pt-12">
             <button
               type="button"
               onClick={() => setView("list")}
-              className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
+              className="flex items-center gap-2 text-gray-400 hover:text-white mb-4 transition-colors"
             >
               <ArrowLeft className="size-4" />
               Back to conversations
             </button>
-            <div className="rounded-lg border border-white/10 bg-white/5 p-6 min-h-[70vh] flex flex-col">
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">
+              {(() => {
+                const conv = selectedConversationId
+                  ? conversations.find(
+                      (c) => c.id === selectedConversationId
+                    )
+                  : null;
+                const date = conv
+                  ? new Date(conv.createdAt)
+                  : new Date();
+                return date.toLocaleDateString(undefined, {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                });
+              })()}
+            </h2>
+            <div className="glass-panel rounded-lg border border-white/10 p-6 h-[calc(100vh-14rem)] min-h-[400px] flex flex-col overflow-hidden">
               <ChatWindow
                 initialQuery={initialQuery}
-                initialConversationId={selectedConversationId ?? undefined}
+                suggestions={[
+                  "I need help with an order",
+                  "Tell me about shipping",
+                  "Hydration tips",
+                ]}
                 className="flex-1 min-h-0"
+                autoScroll={false}
               />
             </div>
           </div>
@@ -88,15 +130,31 @@ export function SupportPage() {
 
   return (
     <AppShell>
-      <main className="lg:pl-20 min-h-screen bg-grid-pattern p-4 md:p-12">
-        <div className="max-w-6xl mx-auto pt-24 lg:pt-12">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold font-display mb-2">Support</h1>
-            <p className="text-gray-400">
-              Chat with our AI about orders, products, or hydration.
-            </p>
+      <main className="lg:pl-24 min-h-screen bg-grid-pattern p-4 md:p-8 lg:pr-8 relative">
+        <div className="fixed top-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
+        <div className="fixed bottom-20 left-40 w-64 h-64 bg-purple-500/5 rounded-full blur-[80px] pointer-events-none z-0" />
+        <div className="relative z-10 max-w-5xl mx-auto pt-24 lg:pt-12">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-12 border-b border-neutral-border pb-8 gap-6">
+            <div>
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter">
+                AI <br /> <span className="text-outline">SUPPORT</span>
+              </h1>
+              <p className="text-gray-400 mt-4 max-w-xl">
+                Chat with our AI about orders, products, shipping, or hydration.
+                Your shopping agent is ready to help.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleNewConversation}
+              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white font-bold hover:bg-primary-dark w-full md:w-auto transition-colors"
+            >
+              <Plus className="size-5" />
+              New conversation
+            </button>
           </div>
-          <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+
+          <div className="glass-panel rounded-lg border border-white/10 p-6">
             <h3 className="text-sm font-semibold text-white mb-4">
               Past conversations
             </h3>

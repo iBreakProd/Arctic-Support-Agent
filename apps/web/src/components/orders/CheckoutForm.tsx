@@ -189,7 +189,7 @@ export function CheckoutForm({ products, initialCart, onSuccess }: CheckoutFormP
             value={deliveryTime}
             onChange={(e) => setDeliveryTime(e.target.value)}
             required
-            className="px-4 py-2 rounded-lg border border-neutral-border bg-background-dark text-white [color-scheme:dark]"
+            className="px-4 py-2 rounded-lg border border-neutral-border bg-background-dark text-white scheme-dark"
           />
         </div>
         <input

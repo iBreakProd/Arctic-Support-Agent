@@ -16,7 +16,7 @@ export const conversationsTable = pgTable("conversation", {
   createdAt: timestamp().defaultNow(),
 });
 
-export const senderEnum = pgEnum("sender", ["user", "ai"]);
+export const senderEnum = pgEnum("sender", ["user", "assistant"]);
 
 export const messagesTable = pgTable("messages", {
   id: serial().primaryKey(),

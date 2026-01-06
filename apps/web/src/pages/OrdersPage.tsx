@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Info, Plus } from "lucide-react";
 import api from "@/lib/api";
 import { AppShell } from "@/components/layout/AppShell";
 import { Modal } from "@/components/ui/Modal";
@@ -96,6 +96,13 @@ export function OrdersPage() {
               <Plus className="size-5" />
               Add order
             </button>
+          </div>
+
+          <div className="flex items-start gap-3 p-4 rounded-lg border border-primary/30 bg-primary/5 mb-8">
+            <Info className="size-5 text-primary shrink-0 mt-0.5" />
+            <p className="text-sm text-gray-300">
+              You can add mock orders to verify Hydra, our AI support bot. Open the chat and ask about your orders—tracking, status, or details.
+            </p>
           </div>
 
           <div className="grid gap-6">

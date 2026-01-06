@@ -14,6 +14,7 @@ const NAV_LINKS = [
 export function Sidebar() {
   const { user, isAuthenticated, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
 
   return (
     <aside className="hidden lg:flex fixed left-0 top-0 h-full w-20 border-r border-neutral-border bg-background z-50 flex-col items-center justify-between py-8">
@@ -48,11 +49,12 @@ export function Sidebar() {
               aria-expanded={menuOpen}
               aria-haspopup="true"
             >
-              {user.imageUrl ? (
+              {user.imageUrl && failedImageUrl !== user.imageUrl ? (
                 <img
                   src={user.imageUrl}
                   alt={user.name}
                   className="w-8 h-8 rounded-full object-cover border-2 border-white/20"
+                  onError={() => setFailedImageUrl(user.imageUrl)}
                 />
               ) : (
                 <div

@@ -1,13 +1,23 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { Send } from "lucide-react";
 
 type ChatInputProps = {
   onSend: (text: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  autoFocus?: boolean;
 };
 
-export function ChatInput({ onSend, disabled, placeholder }: ChatInputProps) {
+export function ChatInput({ onSend, disabled, placeholder, autoFocus }: ChatInputProps) {
   const [text, setText] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      const id = setTimeout(() => inputRef.current?.focus(), 100);
+      return () => clearTimeout(id);
+    }
+  }, [autoFocus]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,21 +29,27 @@ export function ChatInput({ onSend, disabled, placeholder }: ChatInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form
+      onSubmit={handleSubmit}
+      className="flex gap-2 rounded-xl bg-background-dark/80 transition-all"
+    >
       <input
+        ref={inputRef}
         type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={placeholder ?? "Type a message..."}
         disabled={disabled}
-        className="flex-1 px-4 py-2 rounded-lg border border-neutral-border bg-background-dark text-white disabled:opacity-50"
+        maxLength={1000}
+        className="flex-1 px-4 py-3 rounded-lg bg-transparent text-white placeholder:text-gray-500 disabled:opacity-50 outline-none text-sm focus:outline-none"
       />
       <button
         type="submit"
         disabled={disabled || !text.trim()}
-        className="px-4 py-2 rounded-lg bg-primary text-white font-bold disabled:opacity-50"
+        className="px-4 py-3 rounded-lg bg-primary text-white font-bold disabled:opacity-50 hover:bg-primary-dark transition-colors flex items-center justify-center gap-2"
+        aria-label="Send message"
       >
-        Send
+        <Send className="size-4" />
       </button>
     </form>
   );

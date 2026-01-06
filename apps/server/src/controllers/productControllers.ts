@@ -5,9 +5,11 @@ import { productsTable } from "@repo/db/schema";
 import { AppError } from "../utils/errorClasses";
 import { createProductSchema } from "@repo/zod";
 import { openaiClient } from "../ai/client";
+import { isAllowedProductImageUrl } from "../config/allowedProductImages";
 
 export const getProductById = async (req: Request, res: Response) => {
   const { id } = req.params;
+  if (!id) throw new AppError("Product ID is required", 400);
   const [product] = await db
     .select()
     .from(productsTable)
@@ -29,6 +31,13 @@ export const createProduct = async (req: Request, res: Response) => {
 
   if (!inputs.success) {
     throw new AppError("Invalid inputs", 400);
+  }
+
+  if (!isAllowedProductImageUrl(inputs.data.imageUrl)) {
+    throw new AppError(
+      "Invalid product image. Please select an image from the gallery.",
+      400
+    );
   }
 
   const [product] = await db

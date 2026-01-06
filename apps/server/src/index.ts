@@ -25,5 +25,4 @@ app.use("/health", healthChecker);
 app.use(errorHandler);
 
 app.listen(process.env.HTTP_PORT, () => {
-  console.log(`Express server running on port: ${process.env.HTTP_PORT}`);
 });

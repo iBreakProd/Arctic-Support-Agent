@@ -9,13 +9,24 @@ import { openaiClient } from "./client";
 import { aiResponseSchema } from "@repo/zod";
 import { AppError } from "../utils/errorClasses";
 
+const AI_LOG = "[AI]";
+
 export const generateResponse = async (
   conversationId: string,
   userQuery: string,
   userId?: string
 ) => {
+  console.log(`${AI_LOG} generateResponse started`, {
+    conversationId,
+    userQuery: userQuery.slice(0, 100),
+    hasUserId: !!userId,
+  });
   try {
     const history = await getRecentConversationMessages(conversationId);
+    console.log(`${AI_LOG} loaded history`, {
+      conversationId,
+      historyCount: history.length,
+    });
 
     const userContext = userId ? `\n\nThe current user id is ${userId}. Use getUserProfile tool with userId parameter when the user asks about hydration, lifestyle, or personalized advice.` : "";
 
@@ -28,6 +39,10 @@ export const generateResponse = async (
       { role: "user", content: userQuery },
     ];
 
+    console.log(`${AI_LOG} calling OpenAI`, {
+      messageCount: messages.length,
+      model: "gpt-4o-mini",
+    });
     let res = await openaiClient.chat.completions.create({
       model: "gpt-4o-mini",
       messages,
@@ -43,35 +58,61 @@ export const generateResponse = async (
       toolCallIterations < MAX_TOOL_CALL_ITERATIONS
     ) {
       const msg = res.choices[0]?.message;
-      const call = msg?.tool_calls?.[0];
+      const toolCalls = msg?.tool_calls ?? [];
 
       toolCallIterations++;
+      console.log(`${AI_LOG} tool call iteration ${toolCallIterations}`, {
+        finishReason: res.choices[0]?.finish_reason,
+        toolCallCount: toolCalls.length,
+      });
 
-      if (!call || call.type !== "function") break;
-
-      let toolResult;
-      let args;
-
-      try {
-        args = JSON.parse(call.function.arguments);
-      } catch (error) {
-        toolResult = { error: "Invalid tool arguments, please try again" };
-        continue;
-      }
-      try {
-        toolResult = await toolRunner(call.function.name, args, { userId });
-      } catch (error) {
-        toolResult = { error: "Tool execution failed, please try again" };
-        continue;
+      if (toolCalls.length === 0) {
+        console.log(`${AI_LOG} breaking: no tool calls`);
+        break;
       }
 
       messages.push(msg);
-      messages.push({
-        role: "tool",
-        tool_call_id: call.id,
-        iteration_number: toolCallIterations,
-        content: JSON.stringify(toolResult),
-      });
+
+      for (const call of toolCalls) {
+        if (call.type !== "function") continue;
+
+        let toolResult: string;
+        let args: Record<string, unknown>;
+
+        try {
+          args = JSON.parse(call.function.arguments);
+        } catch (error) {
+          console.warn(`${AI_LOG} invalid tool args`, {
+            toolName: call.function.name,
+            raw: call.function.arguments,
+          });
+          messages.push({
+            role: "tool",
+            tool_call_id: call.id,
+            content: JSON.stringify({ error: "Invalid tool arguments, please try again" }),
+          });
+          continue;
+        }
+        try {
+          toolResult = await toolRunner(call.function.name, args, { userId });
+          console.log(`${AI_LOG} tool result`, {
+            toolName: call.function.name,
+            resultPreview: typeof toolResult === "string" ? toolResult.slice(0, 150) : JSON.stringify(toolResult).slice(0, 150),
+          });
+        } catch (error) {
+          console.error(`${AI_LOG} tool execution failed`, {
+            toolName: call.function.name,
+            args,
+            error: error instanceof Error ? error.message : String(error),
+          });
+          toolResult = JSON.stringify({ error: "Tool execution failed, please try again" });
+        }
+        messages.push({
+          role: "tool",
+          tool_call_id: call.id,
+          content: typeof toolResult === "string" ? toolResult : JSON.stringify(toolResult),
+        });
+      }
 
       res = await openaiClient.chat.completions.create({
         model: "gpt-4o-mini",
@@ -82,7 +123,12 @@ export const generateResponse = async (
     }
 
     const finalMessage = res.choices[0]?.message;
+    console.log(`${AI_LOG} OpenAI response`, {
+      finishReason: res.choices[0]?.finish_reason,
+      hasContent: !!finalMessage?.content,
+    });
     if (!finalMessage) {
+      console.error(`${AI_LOG} no final message from OpenAI`);
       throw new AppError("Ai did not respond, please try again", 500);
     }
 
@@ -91,23 +137,44 @@ export const generateResponse = async (
     try {
       parsedResponseJson = JSON.parse(rawResponse);
     } catch (error) {
+      console.error(`${AI_LOG} failed to parse response JSON`, {
+        rawPreview: rawResponse.slice(0, 200),
+      });
       throw new AppError(
         "Ai responded with invalid data, please try again",
         500
       );
+    }
+
+    if (
+      parsedResponseJson?.type === "answer" &&
+      Array.isArray(parsedResponseJson.embeddings) &&
+      parsedResponseJson.embeddings.length > 6
+    ) {
+      console.log(`${AI_LOG} truncating embeddings`, {
+        original: parsedResponseJson.embeddings.length,
+      });
+      parsedResponseJson.embeddings = parsedResponseJson.embeddings.slice(0, 6);
     }
 
     const parsedResponse = aiResponseSchema.safeParse(parsedResponseJson);
-    
     if (!parsedResponse.success) {
+      console.warn(`${AI_LOG} response schema validation failed`, {
+        raw: parsedResponseJson,
+        issues: parsedResponse.error.issues,
+      });
       throw new AppError(
         "Ai responded with invalid data, please try again",
         500
       );
     }
+    console.log(`${AI_LOG} parsed response`, {
+      type: parsedResponse.data.type,
+      responsePreview: typeof parsedResponse.data.response === "string" ? parsedResponse.data.response.slice(0, 80) : undefined,
+    });
 
     await saveUserAndAssistantMessage(conversationId, userQuery, rawResponse);
-
+    console.log(`${AI_LOG} generateResponse completed`, { conversationId });
     return parsedResponse.data;
   } catch (error: any) {
     if (error?.status === 429) {
@@ -132,7 +199,11 @@ export const generateResponse = async (
       throw error;
     }
 
-    console.error("OpenAI API error:", error);
+    console.error(`${AI_LOG} OpenAI API error`, {
+      status: error?.status,
+      code: error?.code,
+      message: error?.message,
+    });
     throw new AppError(
       "Failed to generate AI response. Please try again later.",
       500

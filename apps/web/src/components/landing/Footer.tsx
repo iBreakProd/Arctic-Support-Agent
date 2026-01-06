@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { Mail, Camera, Globe } from "lucide-react";
+import { useChatWidget } from "@/contexts/ChatWidgetContext";
 
 const SHOP_LINKS = [
-  { label: "All Products", href: "#" },
+  { label: "All Products", href: "/products" },
   { label: "Limited Editions", href: "#" },
   { label: "Accessories", href: "#" },
   { label: "Gift Cards", href: "#" },
@@ -27,6 +28,7 @@ const SOCIAL_LINKS = [
 ];
 
 export function Footer() {
+  const { openChat } = useChatWidget();
   return (
     <footer className="border-t border-neutral-border bg-background-dark pt-16 pb-8 px-8 md:px-16">
       <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-16">
@@ -44,7 +46,7 @@ export function Footer() {
           <p className="text-gray-500 text-sm leading-relaxed">
             Arctic.
             <br />
-            Designing the future of hydration.
+            AI support at the heart of everything.
             <br />
             Est. 2024
           </p>
@@ -88,6 +90,15 @@ export function Footer() {
             Help
           </h4>
           <ul className="space-y-4 text-gray-400 text-sm">
+            <li>
+              <button
+                type="button"
+                onClick={openChat}
+                className="text-gray-400 text-sm hover:text-primary transition-colors"
+              >
+                Try the AI
+              </button>
+            </li>
             {HELP_LINKS.map((link) => (
               <li key={link.label}>
                 <Link

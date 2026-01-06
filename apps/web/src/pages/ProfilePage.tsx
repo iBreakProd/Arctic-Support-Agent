@@ -6,8 +6,10 @@ export function ProfilePage() {
   return (
     <ProtectedRoute>
       <AppShell>
-        <main className="lg:pl-24 min-h-screen bg-grid-pattern p-4 md:p-8 lg:pr-8">
-          <div className="max-w-5xl mx-auto pt-24 lg:pt-12">
+        <main className="lg:pl-24 min-h-screen bg-grid-pattern p-4 md:p-8 lg:pr-8 relative">
+          <div className="fixed top-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
+          <div className="fixed bottom-20 left-40 w-64 h-64 bg-purple-500/5 rounded-full blur-[80px] pointer-events-none z-0" />
+          <div className="relative z-10 max-w-5xl mx-auto pt-24 lg:pt-12">
             <div className="mb-12 border-b border-neutral-border pb-8">
               <div className="flex items-center gap-3 mb-2">
                 <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />

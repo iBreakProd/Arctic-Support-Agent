@@ -13,7 +13,12 @@ export function AmbiguityPicker({
 }: AmbiguityPickerProps) {
   return (
     <div>
-      <p className="text-sm text-gray-400 mb-2">{prompt}</p>
+      <p className="text-sm text-gray-400 mb-2">
+        {prompt}
+        <span className="ml-1 text-[10px] uppercase text-primary/80">
+          ({resourceType}s)
+        </span>
+      </p>
       <div className="flex flex-wrap gap-2">
         {options.map(({ id, label }) => (
           <button

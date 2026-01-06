@@ -28,7 +28,7 @@ function getBadgeStyle(category: string): string {
 }
 
 export function ProductListCard({ product }: { product: ProductListItem }) {
-  const badgeStyle = getBadgeStyle(product.category);
+  const badgeStyle = getBadgeStyle(product.category ?? "");
 
   return (
     <Link to={`/products/${product.id}`} className="group product-card-hover relative block">

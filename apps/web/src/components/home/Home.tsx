@@ -9,10 +9,10 @@ import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
 
 const MARQUEE_ITEMS = [
-  "SUSTAINABLE LUXURY",
-  "THERMAL PERFECTION",
-  "URBAN UTILITY",
-  "LIFETIME WARRANTY",
+  "ORDER TRACKING",
+  "PRODUCT CATALOG",
+  "POLICIES",
+  "HYDRATION ADVICE",
 ];
 
 export default function Home() {
@@ -23,8 +23,8 @@ export default function Home() {
         <div className="fixed bottom-20 left-40 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none z-0" />
         <HeroSection />
         <MarqueeTicker items={MARQUEE_ITEMS} />
-        <InfoSection />
         <AIChatWidget />
+        <InfoSection />
         <SpecsSection />
         <ProductsSection />
         <CTASection />
