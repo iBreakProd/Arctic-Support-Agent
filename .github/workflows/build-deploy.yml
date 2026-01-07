@@ -44,8 +44,8 @@ jobs:
           file: ./apps/web/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/Arctic-Support-Agent-web:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/Arctic-Support-Agent-web:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/arctic-support-agent-web:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/arctic-support-agent-web:latest
 
       - name: Build and push SERVER to DockerHub
         uses: docker/build-push-action@v4
@@ -54,8 +54,8 @@ jobs:
           file: ./apps/server/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/Arctic-Support-Agent-server:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/Arctic-Support-Agent-server:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/arctic-support-agent-server:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/arctic-support-agent-server:latest
 
   deploy:
     needs: build
@@ -92,7 +92,7 @@ jobs:
             echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
             cat <<EOF > .env.production
-            DOCKERHUB_IMAGE_PREFIX=${{ secrets.DOCKERHUB_USERNAME }}/Arctic-Support-Agent
+            DOCKERHUB_IMAGE_PREFIX=${{ secrets.DOCKERHUB_USERNAME }}/arctic-support-agent
             IMAGE_TAG=${{ github.sha }}
             NODE_ENV=production
             DATABASE_URL=${{ secrets.DATABASE_URL }}
