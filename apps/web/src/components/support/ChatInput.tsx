@@ -6,18 +6,27 @@ type ChatInputProps = {
   disabled?: boolean;
   placeholder?: string;
   autoFocus?: boolean;
+  initialValue?: string;
 };
 
-export function ChatInput({ onSend, disabled, placeholder, autoFocus }: ChatInputProps) {
+export function ChatInput({ onSend, disabled, placeholder, autoFocus, initialValue }: ChatInputProps) {
   const [text, setText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (autoFocus && inputRef.current) {
+    if (initialValue?.trim()) {
+      setText(initialValue);
       const id = setTimeout(() => inputRef.current?.focus(), 100);
       return () => clearTimeout(id);
     }
-  }, [autoFocus]);
+  }, [initialValue]);
+
+  useEffect(() => {
+    if (autoFocus && !initialValue && inputRef.current) {
+      const id = setTimeout(() => inputRef.current?.focus(), 100);
+      return () => clearTimeout(id);
+    }
+  }, [autoFocus, initialValue]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { HelpCircle, FileText } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
+import { useChatWidget } from "@/contexts/ChatWidgetContext";
 
 export type ProductForOrder = {
   id: string;
@@ -50,6 +50,7 @@ function formatPaymentMethod(method: string): string {
 export function OrderCard({ row, products }: { row: OrderRow; products: ProductForOrder[] }) {
   const { order, items } = row;
   const [showDetails, setShowDetails] = useState(false);
+  const { openChatWithMessage } = useChatWidget();
 
   const firstItem = items[0];
   const firstProduct = firstItem ? products.find((p) => p.id === firstItem.productId) : null;
@@ -113,13 +114,14 @@ export function OrderCard({ row, products }: { row: OrderRow; products: ProductF
               <FileText className="size-4" />
               View Details
             </button>
-            <Link
-              to="/support"
+            <button
+              type="button"
+              onClick={() => openChatWithMessage(`#ORD-${shortId}`)}
               className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-neutral-border hover:border-primary hover:bg-primary/10 text-white text-sm font-semibold transition-all"
             >
               <HelpCircle className="size-4" />
               Help
-            </Link>
+            </button>
           </div>
         </div>
       </div>

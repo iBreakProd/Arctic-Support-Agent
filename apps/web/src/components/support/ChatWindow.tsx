@@ -67,6 +67,7 @@ const LOADING_MESSAGES = [
 
 type ChatWindowProps = {
   initialQuery?: string;
+  initialMessage?: string;
   suggestions?: string[];
   className?: string;
   autoScroll?: boolean;
@@ -75,6 +76,7 @@ type ChatWindowProps = {
 
 export function ChatWindow({
   initialQuery,
+  initialMessage,
   suggestions = [],
   className = "",
   autoScroll = true,
@@ -219,6 +221,7 @@ export function ChatWindow({
         disabled={isLoading}
         placeholder="Ask Hydra about orders, products, or support..."
         autoFocus={autoFocusInput}
+        initialValue={initialMessage}
       />
     </div>
   );

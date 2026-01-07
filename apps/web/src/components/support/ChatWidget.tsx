@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Bot, X } from "lucide-react";
 import { useChatWidget } from "@/contexts/ChatWidgetContext";
@@ -61,9 +62,16 @@ function getSuggestions(pathname: string): string[] {
 }
 
 export function ChatWidget() {
-  const { isOpen, openChat, closeChat } = useChatWidget();
+  const { isOpen, openChat, closeChat, pendingMessage, clearPendingMessage } = useChatWidget();
   const location = useLocation();
   const suggestions = getSuggestions(location.pathname);
+
+  useEffect(() => {
+    if (pendingMessage && isOpen) {
+      const id = requestAnimationFrame(() => clearPendingMessage());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [pendingMessage, isOpen, clearPendingMessage]);
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -103,6 +111,7 @@ export function ChatWidget() {
               suggestions={suggestions}
               className="h-full min-h-0"
               autoFocusInput
+              initialMessage={pendingMessage ?? undefined}
             />
           </div>
         </div>
