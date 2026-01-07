@@ -1,0 +1,14 @@
+services:
+  web:
+    image: ${DOCKERHUB_IMAGE_PREFIX}-web:${IMAGE_TAG}
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+
+  server:
+    image: ${DOCKERHUB_IMAGE_PREFIX}-server:${IMAGE_TAG}
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    ports:
+      - "3001:3000"

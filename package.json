@@ -1,5 +1,5 @@
 {
-  "name": "mini-ai-support-agent",
+  "name": "Arctic-Support-Agent",
   "private": true,
   "scripts": {
     "build": "turbo run build",
