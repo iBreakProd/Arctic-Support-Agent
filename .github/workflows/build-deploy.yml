@@ -70,7 +70,7 @@ jobs:
           host: ${{ secrets.SSH_IP }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: mkdir -p ~/app
+          script: mkdir -p ~/arctic
 
       - name: Copy docker-compose to vm
         uses: appleboy/scp-action@v1
@@ -79,7 +79,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.production.yml"
-          target: "~/app/"
+          target: "~/arctic/"
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -88,7 +88,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/app
+            cd ~/arctic
             echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
             rm -f .env.production
