@@ -16,9 +16,11 @@ passport.use(
       callbackURL: googleCallbackURL,
     },
     async (_accessToken, _refreshToken, profile, done) => {
+      console.log("[GOOGLE AUTH] Raw Profile received:", JSON.stringify(profile, null, 2));
       try {
         const email = profile.emails?.[0]?.value;
         if (!email) {
+          console.error("[GOOGLE AUTH] Failed: No email found in profile");
           return done(new AppError("No email from Google", 400), undefined);
         }
 
@@ -29,8 +31,11 @@ passport.use(
           .limit(1);
 
         if (existing) {
+          console.log("[GOOGLE AUTH] Existing user found:", existing.id);
           return done(null, existing);
         }
+
+        console.log("[GOOGLE AUTH] Creating new user for email:", email);
 
         const [user] = await db
           .insert(usersTable)
@@ -43,11 +48,14 @@ passport.use(
           .returning();
 
         if (!user) {
+          console.error("[GOOGLE AUTH] Failed: User insertion returned empty");
           return done(new AppError("Failed to create user", 500), undefined);
         }
 
+        console.log("[GOOGLE AUTH] Successfully created new user:", user.id);
         return done(null, user);
       } catch (err) {
+        console.error("[GOOGLE AUTH] Uncaught Error in verify callback:", err);
         return done(new AppError("Failed to authenticate with Google", 500), undefined);
       }
     }

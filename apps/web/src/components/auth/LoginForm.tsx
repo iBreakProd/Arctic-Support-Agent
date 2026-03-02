@@ -76,7 +76,7 @@ export function LoginForm() {
       </button>
       <p className="text-sm text-gray-400">
         Or{" "}
-        <a href="/api/v1/auth/google" className="text-primary hover:underline">
+        <a href={`${import.meta.env.VITE_API_URL}/api/v1/auth/google`} className="text-primary hover:underline">
           Sign in with Google
         </a>
       </p>

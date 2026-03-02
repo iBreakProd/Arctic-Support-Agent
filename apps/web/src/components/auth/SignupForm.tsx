@@ -73,13 +73,12 @@ export function SignupForm() {
       <button
         type="submit"
         className="w-full py-2 rounded-lg bg-primary text-white font-bold disabled:opacity-50"
-        disabled={loading}
       >
         {loading ? "Signing up..." : "Sign up"}
       </button>
       <p className="text-sm text-gray-400">
         Or{" "}
-        <a href="/api/v1/auth/google" className="text-primary hover:underline">
+        <a href={`${import.meta.env.VITE_API_URL}/api/v1/auth/google`} className="text-primary hover:underline">
           Sign up with Google
         </a>
       </p>

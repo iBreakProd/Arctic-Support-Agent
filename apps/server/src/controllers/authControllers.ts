@@ -37,7 +37,8 @@ export const signup = async (req: Request, res: Response) => {
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    domain: process.env.NODE_ENV === "production" ? ".hrsht.me" : undefined,
     maxAge: COOKIE_MAX_AGE_DAYS * 24 * 60 * 60 * 1000,
     path: "/",
   });
@@ -66,7 +67,8 @@ export const login = async (req: Request, res: Response) => {
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    domain: process.env.NODE_ENV === "production" ? ".hrsht.me" : undefined,
     maxAge: COOKIE_MAX_AGE_DAYS * 24 * 60 * 60 * 1000,
     path: "/",
   });
@@ -75,7 +77,12 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const logout = async (_req: Request, res: Response) => {
-  res.clearCookie(COOKIE_NAME, { path: "/" });
+  res.clearCookie(COOKIE_NAME, {
+    path: "/",
+    domain: process.env.NODE_ENV === "production" ? ".hrsht.me" : undefined,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
   res.status(200).json({ success: true });
 };
 
@@ -100,20 +107,25 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
 };
 
 export const googleAuthCallback = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate("google", { session: false }, (err: Error | null, user: any) => {
+  console.log("[GOOGLE AUTH CALLBACK] Hit from Google with query:", req.query);
+  passport.authenticate("google", { session: false }, (err: Error | null, user: any, info: any) => {
     if (err) {
+      console.error("[GOOGLE AUTH CALLBACK] Authentication error from passport:", err);
       return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
     }
     if (!user) {
+      console.warn("[GOOGLE AUTH CALLBACK] Authentication succeeded but no user returned. Info:", info);
       return res.redirect(`${process.env.FRONTEND_URL}/login?error=no_user`);
     }
 
+    console.log("[GOOGLE AUTH CALLBACK] Authentication successful! Generating token for user:", user.id);
     const token = signToken({ userId: user.id, email: user.email });
 
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      domain: process.env.NODE_ENV === "production" ? ".hrsht.me" : undefined,
       maxAge: COOKIE_MAX_AGE_DAYS * 24 * 60 * 60 * 1000,
       path: "/",
     });
