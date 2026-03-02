@@ -1,4 +1,4 @@
-# Arctic - Smart Hydration E-Commerce
+# [Arctic](https://arctic.hrsht.me/) - Smart Hydration E-Commerce
 
 **Arctic** is an intelligent e-commerce application for premium hydration gear, powered by a custom-built, from-scratch AI architecture. It features a complete raw implementation of an LLM Tool Runner that seamlessly handles product searches, order status checks, and personalized hydration advice through a chat interface. Built as a Turborepo monorepo, it features an Express backend, a React frontend, and a PostgreSQL database.
 
