@@ -10,6 +10,9 @@ RUN pnpm install --frozen-lockfile
 
 COPY apps/web ./apps/web
 
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN pnpm --filter web build
 
 FROM nginx:alpine

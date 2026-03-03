@@ -43,6 +43,8 @@ jobs:
           context: .
           file: ./apps/web/Dockerfile
           push: true
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/arctic-support-agent-web:${{ github.sha }}
             ${{ secrets.DOCKERHUB_USERNAME }}/arctic-support-agent-web:latest
