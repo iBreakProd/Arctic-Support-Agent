@@ -1,6 +1,6 @@
 # [Arctic](https://arctic.hrsht.me/) - Smart Hydration E-Commerce
 
-**Arctic** is a humble exploration into building an e-commerce application for premium hydration gear. It is powered by a custom-built AI architecture, representing a learning journey into how an LLM Tool Runner can gently handle product searches, order status checks, and personalized hydration advice through a chat interface. Built as a Turborepo monorepo, it features an Express backend, a React frontend, and a PostgreSQL database. I am deeply grateful to have had the opportunity to build and share this.
+**Arctic** is an e-commerce application for premium hydration gear. It features a custom-built AI architecture, serving as a practical implementation of an LLM Tool Runner that handles product searches, order status checks, and personalized hydration advice through a chat interface. Built as a Turborepo monorepo, it features an Express backend, a React frontend, and a PostgreSQL database.
 
 ## 🎥 Demo Video
 
@@ -148,36 +148,36 @@ arctic/
 
 ## AI Architecture (Deep Dive)
 
-Unlike many applications that utilize wonderful and robust frameworks like LangChain or LlamaIndex to manage AI workflows, **Arctic features a transparent, manual implementation of an LLM Tool Runner.** 
+**Arctic features a transparent, custom implementation of an LLM Tool Runner**, bypassing high-level abstraction frameworks to manage AI workflows directly.
 
-The true purpose of this project was an earnest desire to deeply understand how Agentic AI works under the hood: learning how an LLM decides *when* to fetch external context, *how* it parses intent, and *how* to safely and respectfully inject private database information into the context window for Retrieval-Augmented Generation (RAG). I am thankful for the open-source community that made this learning possible.
+The purpose of this project was to explore how Agentic AI works under the hood: demonstrating how an LLM decides *when* to fetch external context, *how* it parses intent, and *how* to safely inject private database information into the context window for Retrieval-Augmented Generation (RAG).
 
 ### 1. The Execution Loop
 The `apps/server/src/ai/index.ts` orchestrates the loop:
 - The system maintains context (System Prompt + History + Current Query).
-- It gently operates a `while` loop, mindfully restricted to a **MAX of 5 iterations**, to prevent accidental infinite execution loops and respect API costs.
-- It passes `tool_calls` down to the custom `Tool Runner` and loops back up with the resolved data until a helpful final text answer is synthesized.
+- It operates a `while` loop, restricted to a **MAX of 5 iterations**, to prevent infinite execution loops and optimize API costs.
+- It passes `tool_calls` down to the custom `Tool Runner` and loops back up with the resolved data until a final text answer is synthesized.
 
 ### 2. Context Boundaries and Roles
-The AI assumes the friendly "Hydra" persona and is kindly guided to stay focused:
-- It politely redirects topics unrelated to Arctic products, shipping, orders, or hydration.
+The AI assumes the "Hydra" persona and is guided to stay focused:
+- It redirects topics unrelated to Arctic products, shipping, orders, or hydration.
 - The system relies on structured outputs via OpenAI's `response_format: { type: "json_object" }` to ensure a consistent shape.
 
 ### 3. Graceful Fallbacks & Validation
-Before leaving the backend, the raw LLM output is carefully passed through Zod schema validation (`aiResponseSchema`). If the LLM happens to provide markdown or misses required attributes, the backend suppresses the error and thankfully serves a soft, robust standard fallback directly to the user to keep the UI experience pleasant.
+Before leaving the backend, the raw LLM output is passed through Zod schema validation (`aiResponseSchema`). If the LLM returns markdown or misses required attributes, the backend suppresses the error and serves a standard fallback directly to the user to maintain a reliable UI experience.
 
 ### 4. Dynamic UI Rendering (Embeddings)
-The system prompt kindly asks the LLM to output a dedicated array of `embeddings` alongside its conversational text. The orchestrator limits this list to a maximum of 6 elements. The React frontend then consumes these IDs and mounts helpful, interactive functional UI components (Product Cards, Order Widgets) dynamically for the user.
+The system prompt instructs the LLM to output a dedicated array of `embeddings` alongside its conversational text. The orchestrator limits this list to a maximum of 6 elements. The React frontend then consumes these IDs and mounts interactive functional UI components (Product Cards, Order Widgets) dynamically for the user.
 
 ---
 
 ## Database & Persistence Strategy
 
 ### PostgreSQL (via Drizzle ORM)
-Connected to a Neon database, which thoughtfully acts as the singular source of truth:
+Connected to a Neon database, acting as the singular source of truth:
 - **`products` & `orders` tables**: E-commerce entities for catalog rendering and transactional queries.
-- **`users` & `user_profiles` tables**: Authentication and hydration-specific profile data (Climate, Activity) for kindly customized AI support.
-- **`conversation` & `messages` tables**: Chat histories are stored relationally here. This gently empowers the backend to fetch the conversational log and construct LLM windows without needing secondary vector databases or isolated prompt logs.
+- **`users` & `user_profiles` tables**: Authentication and hydration-specific profile data (Climate, Activity) for customized AI support.
+- **`conversation` & `messages` tables**: Chat histories are stored relationally here. This allows the backend to fetch the conversational log and construct LLM windows without needing secondary vector databases or isolated prompt logs.
 
 ---
 
@@ -284,7 +284,7 @@ A combination of global and app-specific variables. Provide `.env` files in root
 
 ## About the Builder
 
-**Harshit** is a software engineer who is deeply passionate about learning, building helpful intelligent systems, and trying to create kind, seamless user experiences. Thank you for taking the time to explore this project!
+**Harshit** is a software engineer passionate about building intelligent systems and creating seamless user experiences.
 
 **Website**: [hrsht.me](https://hrsht.me)  
 **LinkedIn**: [in/ibreakprod](https://www.linkedin.com/in/ibreakprod/)  
