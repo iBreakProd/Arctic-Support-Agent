@@ -4,7 +4,10 @@
 
 ## 🎥 Demo Video
 
-> *(Add links to demo videos/screenshots here)*
+<a href="https://youtu.be/mRuttj1RPNU" target="_blank">
+  <img src="https://img.youtube.com/vi/mRuttj1RPNU/maxresdefault.jpg" width="560" alt="Arctic- The Hydrabot Showcase">
+</a>  
+<p><b>Arctic- The Hydrabot Showcase</b></p>
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
